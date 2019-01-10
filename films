@@ -1,0 +1,29 @@
+CREATE TABLE `users` (
+  `id` INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
+  `login` varchar(255) UNIQUE NOT NULL,
+  `pass` varchar(255) not null
+);
+CREATE TABLE `films`(
+  `id` INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(255) NOT NULL,
+  `year` SMALLINT NOT NULL,
+  `user_id` INT NOT NULL,
+  FOREIGN KEY `films`(`user_id`) REFERENCES `users`(`id`)
+);
+CREATE TABLE `genres`(
+  `id` INT NOT NULL UNIQUE AUTO_INCREMENT PRIMARY KEY,
+  `genre` VARCHAR(255) NOT NULL
+);
+CREATE TABLE `films_genres`(
+  `film_id` INT NOT NULL,
+  `genre_id` INT NOT NULL,
+  PRIMARY KEY (`film_id`,`genre_id`),
+  FOREIGN KEY `films_genres`(`film_id`) REFERENCES `films`(`id`),
+  FOREIGN KEY `films_genres`(`genre_id`) REFERENCES `genres`(`id`)
+);
+
+SELECT f.name, u.login, g.genre FROM users AS u
+  INNER JOIN films AS f ON u.id = f.user_id
+    INNER JOIN films_genres AS fj ON fj.film_id=f.id
+      INNER JOIN genres AS g ON g.id=fj.genre_id
+        WHERE g.genre='Drama';
