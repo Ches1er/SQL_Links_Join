@@ -22,8 +22,35 @@ CREATE TABLE `films_genres`(
   FOREIGN KEY `films_genres`(`genre_id`) REFERENCES `genres`(`id`)
 );
 
-SELECT f.name, u.login, g.genre FROM users AS u
+# select film name + film year + user name
+SELECT f.name,f.year,u.login FROM users AS u INNER JOIN films AS f ON u.id = f.user_id;
+
+# select film name + film year + user name where film year > 1990
+
+SELECT f.name,f.year,u.login FROM users AS u INNER JOIN films AS f on u.id = f.user_id
+  WHERE f.year>=1990;
+
+# select film name + film year + user name where movie year > then older movie in the 'vasia' collection;
+SELECT u.login,f.name,f.year FROM users as u INNER JOIN films AS f ON u.id = f.user_id
+  WHERE f.year>(SELECT MAX(f.year) FROM films AS f INNER JOIN users AS u ON f.user_id = u.id
+    GROUP BY u.login HAVING u.login='vasia');
+
+# select film name + user login + film genre where film genre = Action
+SELECT f.name, u.login, g.genre AS film_genre FROM users AS u
   INNER JOIN films AS f ON u.id = f.user_id
     INNER JOIN films_genres AS fj ON fj.film_id=f.id
       INNER JOIN genres AS g ON g.id=fj.genre_id
-        WHERE g.genre='Drama';
+        WHERE g.genre='Action';
+
+# select number of films + user login where film genre = Action
+
+SELECT COUNT(f.name) AS number_of_movies, u.login, g.genre AS film_genre FROM users AS u
+  INNER JOIN films AS f ON u.id = f.user_id
+    INNER JOIN films_genres AS fj ON fj.film_id=f.id
+      INNER JOIN genres AS g ON g.id=fj.genre_id
+        WHERE g.genre='Action'
+          GROUP BY u.login;
+
+# select film name + user name GROUP by login and concat film name
+SELECT GROUP_CONCAT(f.name) AS f_name, u.login FROM users AS u INNER JOIN films AS f ON u.id = f.user_id
+  GROUP BY u.login;
